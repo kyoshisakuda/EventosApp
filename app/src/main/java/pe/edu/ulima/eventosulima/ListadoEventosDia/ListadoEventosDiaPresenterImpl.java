@@ -8,7 +8,7 @@ import java.util.List;
 import pe.edu.ulima.eventosulima.beans.Eventos;
 
 /**
- * Created by kyosh on 8/07/2016.
+ * Created by kyoshi on 8/07/2016.
  */
 public class ListadoEventosDiaPresenterImpl implements ListadoEventosDiaPresenter{
 
@@ -24,11 +24,11 @@ public class ListadoEventosDiaPresenterImpl implements ListadoEventosDiaPresente
         Calendar calendario = Calendar.getInstance();
         calendario.setTime(new Date());
         eventos.add(new Eventos("Mi Cumpleaños", "Mi Casa", calendario.getTime(), 5, true));
-        calendario.add(Calendar.HOUR_OF_DAY, 1);
+        calendario.add(Calendar.HOUR_OF_DAY, 2);
         eventos.add(new Eventos("Hackaton", "S-270", calendario.getTime(), 5, true));
-        calendario.add(Calendar.HOUR_OF_DAY, 1);
+        calendario.add(Calendar.HOUR_OF_DAY, 2);
         eventos.add(new Eventos("Competitividad Textil", "Aula Magna A", calendario.getTime(), 5, true));
-        calendario.add(Calendar.HOUR_OF_DAY, 1);
+        calendario.add(Calendar.HOUR_OF_DAY, 2);
         eventos.add(new Eventos("Ceremonia de Graduación", "Zoom", calendario.getTime(), 5, true));
 
         mView.mostrarListadoEventosDia(eventos);

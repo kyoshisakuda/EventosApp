@@ -1,15 +1,18 @@
 package pe.edu.ulima.eventosulima.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Calendar;
 import java.util.List;
 
+import pe.edu.ulima.eventosulima.DetailActivity;
 import pe.edu.ulima.eventosulima.R;
 import pe.edu.ulima.eventosulima.beans.Eventos;
 
@@ -58,13 +61,25 @@ public class ListadoEventosDiaAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) view.getTag();
         }
 
-        Eventos evento = mEventos.get(i);
+        final Eventos evento = mEventos.get(i);
 
         viewHolder.tviNombreEvento.setText(evento.getNombreEvento());
         viewHolder.tviLugarEvento.setText(evento.getLugar());
         Calendar calendario = Calendar.getInstance();
         calendario.setTime(evento.getFecha());
-        viewHolder.tviHora.setText(Calendar.HOUR_OF_DAY+":"+Calendar.MINUTE);
+        String marcadorHora = calendario.get(Calendar.AM_PM) == Calendar.PM ? "pm" : "am";
+        viewHolder.tviHora.setText(calendario.get(Calendar.HOUR_OF_DAY)+":"+calendario.get(calendario.MINUTE)+" "+marcadorHora);
+
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(mContext, evento.getNombreEvento(), Toast.LENGTH_SHORT).show();
+
+                Intent intentDetail = new Intent(mContext, DetailActivity.class);
+                intentDetail.putExtra("evento", evento);
+                //mContext.startActivity(intentDetail);
+            }
+        });
 
         return view;
     }

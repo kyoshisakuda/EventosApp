@@ -1,11 +1,12 @@
 package pe.edu.ulima.eventosulima.beans;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by kyosh on 8/07/2016.
  */
-public class Eventos {
+public class Eventos implements Serializable{
     private String NombreEvento;
     private String Lugar;
     private Date Fecha;
