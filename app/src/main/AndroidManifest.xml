@@ -29,8 +29,7 @@
         <activity android:name=".CalendarioActivity" />
         <activity android:name=".ListadoEventosDia.ListaEventosDiaActivity"></activity>
 
-        <service android:name=".Services.AlarmService" />
-
+        <service android:name=".services.AlarmService" />
     </application>
 
 </manifest>

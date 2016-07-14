@@ -1,132 +1,154 @@
 package pe.edu.ulima.eventosulima;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.ContentUris;
-import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.net.Uri;
-import android.os.Build;
-import android.provider.CalendarContract;
+import android.graphics.drawable.Drawable;
+import android.media.Image;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.AttributeSet;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
-import pe.edu.ulima.eventosulima.Services.AlarmService;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class DetailActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener{
+import pe.edu.ulima.eventosulima.beans.Evento;
+
+public class DetailActivity extends AppCompatActivity {
+    /*void actualizar(Boolean b){
+        Firebase.setAndroidContext(getApplicationContext());
+        Firebase myFirebaseRefr;
+        myFirebaseRefr = new Firebase("https://eventosulima-b8cfe.firebaseio.com/").child("Evento");
+        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put("/"+ eventosLista.get(0).getKey() + "/ir" , b);
+        myFirebaseRefr.updateChildren(childUpdates);
+    }*/
 
     public static final String EXTRA_POSITION = "position";
-    CollapsingToolbarLayout collapsingToolbar;
-    TextView placeDetail;
-    TextView placeLocation;
+
+    public ArrayList<Evento> eventosLista  = new ArrayList<Evento>();
+    public DetailActivity() {}
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        /*setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        // Set Collapsing Toolbar layout to the screen*/
-        collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-        // Set title of Detail page
-        // collapsingToolbar.setTitle(getString(R.string.item_title));
 
-        int postion = getIntent().getIntExtra(EXTRA_POSITION, 0);
-        Resources resources = getResources();
-        String[] places = resources.getStringArray(R.array.evento);
-        collapsingToolbar.setTitle(places[postion % places.length]);
+        Firebase.setAndroidContext(getApplicationContext());
 
-        String[] placeDetails = resources.getStringArray(R.array.decripcion_detalle);
-        placeDetail = (TextView) findViewById(R.id.place_detail);
-        placeDetail.setText(placeDetails[postion % placeDetails.length]);
+        Firebase myFirebaseRef;
+        myFirebaseRef = new Firebase("https://eventosulima-b8cfe.firebaseio.com/").child("Evento");
 
-        String[] placeLocations = resources.getStringArray(R.array.ubicacion);
-        placeLocation =  (TextView) findViewById(R.id.place_location);
-        placeLocation.setText(placeLocations[postion % placeLocations.length]);
+        myFirebaseRef.addValueEventListener(new ValueEventListener() {
+            // Set Collapsing Toolbar layout to the screen
+            CollapsingToolbarLayout collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+            String key = getIntent().getStringExtra("firebaseposition");
+            TextView placeDetail = (TextView) findViewById(R.id.place_detail);
+            //Switch mSwitch = (Switch) findViewById(R.id.switch1);
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot data : dataSnapshot.getChildren()){
+                    if(data.getKey().equals(key)) {
+                        Evento evento = data.getValue(Evento.class);
+                        evento.setKey(data.getKey());
+                        eventosLista.add(evento);
 
-        TypedArray placePictures = resources.obtainTypedArray(R.array.imagen);
-        ImageView placePicutre = (ImageView) findViewById(R.id.image);
-        placePicutre.setImageDrawable(placePictures.getDrawable(postion % placePictures.length()));
+                    }
 
-        placePictures.recycle();
+                }
+                collapsingToolbar.setTitle(eventosLista.get(0).getEvento());
+                placeDetail.setText(eventosLista.get(0).getDescripcion_detalle());
+                Log.i("EventosLista", eventosLista.get(0).getDescripcion_detalle());
+                TextView placeLocation =  (TextView) findViewById(R.id.place_location);
+                placeLocation.setText(eventosLista.get(0).getUbicacion());
+                ImageView placePicutre = (ImageView) findViewById(R.id.image);
+                Picasso.with(getApplicationContext()).load(eventosLista.get(0).getImagen()).into(placePicutre);
 
-        ToggleButton tbuAsistir = (ToggleButton) findViewById(R.id.tbuAsistir);
-        tbuAsistir.setOnCheckedChangeListener(this);
+                /*mSwitch.setChecked(eventosLista.get(0).isIr());
+
+
+
+                mSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+                    @Override
+                    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+
+                        actualizar(b);
+                        //Log.i("switch", ""+b);
+                        //Log.i("keyswitch", eventosLista.get(0).getKey());
+
+
+                    }
+                });*/
+
+
+
+
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
     }
 
     @Override
-    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-        if (b) {
-            //Toast.makeText(this, collapsingToolbar.getTitle(), Toast.LENGTH_SHORT).show();
-            /*
-            SimpleDateFormat sdf = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
-            String dateInString = "20-07-2016 14:30:00";
-            Date date = new Date();
-            try {
-                date = sdf.parse(dateInString);
-            } catch (ParseException e) {
-                e.printStackTrace();
+    protected void onResume() {
+        super.onResume();
+        /*final Firebase myFirebaseRef;
+        Firebase.setAndroidContext(getApplicationContext());
+        myFirebaseRef = new Firebase("https://eventosulima-b8cfe.firebaseio.com/").child("Evento");
+        final Map<String, Object> childUpdates = new HashMap<>();
+        Switch mSwitch = (Switch) findViewById(R.id.switch1);
+        mSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, final boolean b) {
+
+                Log.i("switch", ""+b);
+                Log.i("keyswitch", eventosLista.get(0).getKey());
+
+
+
+
+                childUpdates.put("/"+ eventosLista.get(0).getKey() + "/ir" , b);
+
+
             }
 
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(date);
-            final ContentValues event = new ContentValues();
-            event.put(CalendarContract.Events.CALENDAR_ID, 1);
+        });
 
-            event.put(CalendarContract.Events.TITLE, collapsingToolbar.getTitle().toString());
-            event.put(CalendarContract.Events.DESCRIPTION, placeDetail.getText().toString());
-            event.put(CalendarContract.Events.EVENT_LOCATION, placeLocation.getText().toString());
 
-            event.put(CalendarContract.Events.DTSTART, cal.getTimeInMillis());
-            event.put(CalendarContract.Events.DTEND, cal.getTimeInMillis()+60*60*1000);
-            event.put(CalendarContract.Events.ALL_DAY, 0);   // 0 for false, 1 for true
-            event.put(CalendarContract.Events.HAS_ALARM, 1); // 0 for false, 1 for true
 
-            String timeZone = TimeZone.getDefault().getID();
-            event.put(CalendarContract.Events.EVENT_TIMEZONE, timeZone);
-
-            Uri baseUri;
-            if (Build.VERSION.SDK_INT >= 8) {
-                baseUri = Uri.parse("content://com.android.calendar/events");
-            } else {
-                baseUri = Uri.parse("content://calendar/events");
-            }
-
-            getContentResolver().insert(baseUri, event);*/
-
-            //startService(new Intent(getBaseContext(), AlarmService.class));
-
-            startAlarm();
-        } else {
-
-        }
+        myFirebaseRef.updateChildren(childUpdates);
+*/
     }
 
-    private void startAlarm() {
-        AlarmManager alarmManager = (AlarmManager) this.getSystemService(this.ALARM_SERVICE);
-        Calendar calendar =  Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 4);
-        calendar.set(Calendar.MINUTE, 51);
-        calendar.set(Calendar.SECOND, 00);
-        long when = calendar.getTimeInMillis();         // notification time
-        Intent intent = new Intent(this, AlarmService.class);
-        PendingIntent pendingIntent = PendingIntent.getService(this, 0, intent, 0);
-        alarmManager.set(AlarmManager.RTC, when, pendingIntent);
-    }
+
 }

@@ -12,10 +12,10 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import layout.CardFragment;
-import layout.General;
-import layout.Industrial;
-import layout.Sistemas;
+import pe.edu.ulima.eventosulima.layout.Asistir;
+import pe.edu.ulima.eventosulima.layout.General;
+import pe.edu.ulima.eventosulima.layout.Industrial;
+import pe.edu.ulima.eventosulima.layout.Sistemas;
 
 public class Navigation extends AppCompatActivity {
     private DrawerLayout drawerLayout;
@@ -54,9 +54,11 @@ public class Navigation extends AppCompatActivity {
                 if(item.getItemId() == R.id.fragmentgeneral){
                     transaction.replace(R.id.flaContenido, new General());
                 }else if(item.getItemId() == R.id.fragmentindustrial){
-                transaction.replace(R.id.flaContenido, new Industrial());
+                    transaction.replace(R.id.flaContenido, new Industrial());
                 }else if(item.getItemId() == R.id.fragmentsistemas){
-                transaction.replace(R.id.flaContenido, new Sistemas());
+                    transaction.replace(R.id.flaContenido, new Sistemas());
+                }else if(item.getItemId() == R.id.miseventos){
+                    transaction.replace(R.id.flaContenido, new Asistir());
                 }
 
                 transaction.commit();

@@ -1,16 +1,24 @@
 package pe.edu.ulima.eventosulima.ListadoEventosDia;
 
+import com.firebase.client.ChildEventListener;
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.Query;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import pe.edu.ulima.eventosulima.beans.Eventos;
+import pe.edu.ulima.eventosulima.beans.Evento;
 
 /**
- * Created by kyoshi on 8/07/2016.
+ * Created by kyosh on 13/07/2016.
  */
-public class ListadoEventosDiaPresenterImpl implements ListadoEventosDiaPresenter{
+public class ListadoEventosDiaPresenterImpl implements ListadoEventosDiaPresenter {
 
     private ListadoEventosDiaView mView;
 
@@ -19,17 +27,40 @@ public class ListadoEventosDiaPresenterImpl implements ListadoEventosDiaPresente
     }
 
     @Override
-    public void getEventosDia(Date fecha) {
-        List<Eventos> eventos = new ArrayList<>();
-        Calendar calendario = Calendar.getInstance();
-        calendario.setTime(new Date());
-        eventos.add(new Eventos("Mi Cumpleaños", "Mi Casa", calendario.getTime(), 5, true));
-        calendario.add(Calendar.HOUR_OF_DAY, 2);
-        eventos.add(new Eventos("Hackaton", "S-270", calendario.getTime(), 5, true));
-        calendario.add(Calendar.HOUR_OF_DAY, 2);
-        eventos.add(new Eventos("Competitividad Textil", "Aula Magna A", calendario.getTime(), 5, true));
-        calendario.add(Calendar.HOUR_OF_DAY, 2);
-        eventos.add(new Eventos("Ceremonia de Graduación", "Zoom", calendario.getTime(), 5, true));
+    public void getEventosDia(String fecha) {
+        final List<Evento> eventos = new ArrayList<>();
+
+        Firebase ref = new Firebase("https://eventosulima-b8cfe.firebaseio.com/").child("Evento");
+        Query query = ref.orderByChild("fecha").equalTo(fecha);
+
+        query.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Evento e = dataSnapshot.getValue(Evento.class);
+                e.setKey(dataSnapshot.getKey());
+                eventos.add(e);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
 
         mView.mostrarListadoEventosDia(eventos);
     }

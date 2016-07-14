@@ -7,18 +7,17 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.firebase.client.Firebase;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import layout.CardFragment;
-import layout.General;
-import layout.Industrial;
-import layout.Sistemas;
+import pe.edu.ulima.eventosulima.layout.Asistir;
+import pe.edu.ulima.eventosulima.layout.CardFragment;
+import pe.edu.ulima.eventosulima.layout.General;
+import pe.edu.ulima.eventosulima.layout.Industrial;
+import pe.edu.ulima.eventosulima.layout.Sistemas;
 
 public class MainActivity extends AppCompatActivity {
-    Firebase myFirebaseRef = new Firebase("https://eventosulima-b8cfe.firebaseio.com/");
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
         adapter.addFragment(new Industrial());
         adapter.addFragment(new Sistemas());
         adapter.addFragment(new CardFragment());
+        adapter.addFragment(new Asistir());
 
         viewPager.setAdapter(adapter);
     }

@@ -9,12 +9,17 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import pe.edu.ulima.eventosulima.DetailActivity;
 import pe.edu.ulima.eventosulima.R;
-import pe.edu.ulima.eventosulima.beans.Eventos;
+import pe.edu.ulima.eventosulima.beans.Evento;
 
 /**
  * Created by kyosh on 8/07/2016.
@@ -22,10 +27,10 @@ import pe.edu.ulima.eventosulima.beans.Eventos;
 public class ListadoEventosDiaAdapter extends BaseAdapter {
 
     private LayoutInflater mInflater;
-    private List<Eventos> mEventos;
+    private List<Evento> mEventos;
     private Context mContext;
 
-    public ListadoEventosDiaAdapter(List<Eventos> mEventos, Context mContext) {
+    public ListadoEventosDiaAdapter(List<Evento> mEventos, Context mContext) {
         this.mInflater = LayoutInflater.from(mContext);
         this.mEventos = mEventos;
         this.mContext = mContext;
@@ -61,23 +66,32 @@ public class ListadoEventosDiaAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) view.getTag();
         }
 
-        final Eventos evento = mEventos.get(i);
+        final Evento evento = mEventos.get(i);
 
-        viewHolder.tviNombreEvento.setText(evento.getNombreEvento());
-        viewHolder.tviLugarEvento.setText(evento.getLugar());
+        viewHolder.tviNombreEvento.setText(evento.getEvento());
+        viewHolder.tviLugarEvento.setText(evento.getUbicacion());
+
+        Date fecha = new Date();
+        DateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        try {
+            fecha = format.parse(evento.getFecha()+" "+evento.getHora());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
         Calendar calendario = Calendar.getInstance();
-        calendario.setTime(evento.getFecha());
+        calendario.setTime(fecha);
         String marcadorHora = calendario.get(Calendar.AM_PM) == Calendar.PM ? "pm" : "am";
-        viewHolder.tviHora.setText(calendario.get(Calendar.HOUR_OF_DAY)+":"+calendario.get(calendario.MINUTE)+" "+marcadorHora);
+        viewHolder.tviHora.setText(calendario.get(Calendar.HOUR_OF_DAY)+":"+evento.getHora().split(":")[1]+" "+marcadorHora);
 
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(mContext, evento.getNombreEvento(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(mContext, evento.getKey(), Toast.LENGTH_SHORT).show();
 
                 Intent intentDetail = new Intent(mContext, DetailActivity.class);
-                intentDetail.putExtra("evento", evento);
-                //mContext.startActivity(intentDetail);
+                intentDetail.putExtra("firebaseposition", evento.getKey());
+                mContext.startActivity(intentDetail);
             }
         });
 

@@ -9,5 +9,8 @@
         <item
             android:id="@+id/fragmentindustrial"
             android:title="Ingeniería Industrial"></item>
+        <item
+            android:id="@+id/miseventos"
+            android:title="Mis eventos"></item>
     </group>
 </menu>

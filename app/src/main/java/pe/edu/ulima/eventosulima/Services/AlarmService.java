@@ -1,4 +1,4 @@
-package pe.edu.ulima.eventosulima.Services;
+package pe.edu.ulima.eventosulima.services;
 
 import android.app.IntentService;
 import android.app.Notification;
@@ -7,7 +7,6 @@ import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.os.Handler;
 import android.os.IBinder;
 import android.widget.Toast;
@@ -17,9 +16,10 @@ import pe.edu.ulima.eventosulima.Navigation;
 import pe.edu.ulima.eventosulima.R;
 
 /**
- * Created by kyosh on 13/07/2016.
+ * Created by kyosh on 14/07/2016.
  */
 public class AlarmService extends IntentService {
+
     private static final int NOTIF_ID = 1;
     private Handler mHandler;
 
@@ -37,7 +37,7 @@ public class AlarmService extends IntentService {
 
     @Override
     public void onDestroy() {
-        Toast.makeText(this, "Service Destroyed", Toast.LENGTH_LONG).show();
+        //Toast.makeText(this, "Service Destroyed", Toast.LENGTH_LONG).show();
         super.onDestroy();
     }
 
@@ -53,17 +53,14 @@ public class AlarmService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
+            final String evento = intent.getStringExtra("evento");
+            final int key = intent.getIntExtra("key", 0);
             synchronized (this) {
-                try {
-                    wait(10000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
                         //createNotification();
-                        createNotification();
+                        createNotification(evento, key);
                         onDestroy();
                     }
                 });
@@ -71,11 +68,12 @@ public class AlarmService extends IntentService {
         }
     }
 
-    public void createNotification() {
-        Intent intent = new Intent(this, Navigation.class);
+    public void createNotification(String contenido, int key) {
+        Intent intent = new Intent(this, DetailActivity.class);
+        intent.putExtra("firebaseposition", ""+key);
 
         TaskStackBuilder taskStackBuilder = TaskStackBuilder.create(this);
-        taskStackBuilder.addParentStack(Navigation.class);
+        //taskStackBuilder.addParentStack(DetailActivity.class);
         taskStackBuilder.addNextIntent(intent);
 
         PendingIntent pendingIntent = taskStackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -83,7 +81,7 @@ public class AlarmService extends IntentService {
         Notification notification = new Notification.Builder(this)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(getString(R.string.app_name))
-                .setContentText("Sample Notification")
+                .setContentText(contenido)
                 .setAutoCancel(true)
                 .setPriority(Notification.PRIORITY_MAX)
                 .setDefaults(Notification.DEFAULT_VIBRATE)

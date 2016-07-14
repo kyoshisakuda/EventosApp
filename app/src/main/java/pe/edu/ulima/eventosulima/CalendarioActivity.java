@@ -6,12 +6,14 @@ import android.os.Bundle;
 
 import com.squareup.timessquare.CalendarPickerView;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
 import pe.edu.ulima.eventosulima.ListadoEventosDia.ListaEventosDiaActivity;
 
-public class CalendarioActivity extends AppCompatActivity implements CalendarPickerView.CellClickInterceptor{
+public class CalendarioActivity extends AppCompatActivity implements CalendarPickerView.CellClickInterceptor {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +34,10 @@ public class CalendarioActivity extends AppCompatActivity implements CalendarPic
     @Override
     public boolean onCellClicked(Date date) {
         Intent intent = new Intent(this, ListaEventosDiaActivity.class);
+        DateFormat df = new SimpleDateFormat("dd-MM-yyyy");
+        String strFecha = df.format(date);
+
+        intent.putExtra("fecha", strFecha);
         startActivity(intent);
         return true;
     }

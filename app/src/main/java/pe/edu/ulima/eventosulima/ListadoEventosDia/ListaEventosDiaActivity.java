@@ -1,18 +1,18 @@
 package pe.edu.ulima.eventosulima.ListadoEventosDia;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import pe.edu.ulima.eventosulima.R;
 import pe.edu.ulima.eventosulima.adapters.ListadoEventosDiaAdapter;
-import pe.edu.ulima.eventosulima.beans.Eventos;
+import pe.edu.ulima.eventosulima.beans.Evento;
 
 public class ListaEventosDiaActivity extends AppCompatActivity implements ListadoEventosDiaView {
 
@@ -28,7 +28,9 @@ public class ListaEventosDiaActivity extends AppCompatActivity implements Listad
 
         setPresenter(new ListadoEventosDiaPresenterImpl(this));
 
-        mPresenter.getEventosDia(Calendar.getInstance().getTime());
+        Intent prevIntent = getIntent();
+        String fecha = prevIntent.getStringExtra("fecha");
+        mPresenter.getEventosDia(fecha);
     }
 
     @Override
@@ -37,7 +39,7 @@ public class ListaEventosDiaActivity extends AppCompatActivity implements Listad
     }
 
     @Override
-    public void mostrarListadoEventosDia(List<Eventos> eventos) {
+    public void mostrarListadoEventosDia(List<Evento> eventos) {
         ListadoEventosDiaAdapter adapter = new ListadoEventosDiaAdapter(eventos, this);
 
         lviEventosDia.setAdapter(adapter);
