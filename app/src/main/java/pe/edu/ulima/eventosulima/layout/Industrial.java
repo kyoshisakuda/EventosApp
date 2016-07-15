@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
@@ -230,6 +231,27 @@ public class Industrial extends Fragment {
             AlarmManager alarmManager = (AlarmManager) context.getSystemService(context.ALARM_SERVICE);
             Calendar calendar =  Calendar.getInstance();
             calendar.setTime(fecha);
+
+            SharedPreferences sp = context.getSharedPreferences("preferencias",context.MODE_PRIVATE);
+            int minutos = 0;
+            switch (sp.getInt("opcion",0)) {
+                case R.id.mi5:
+                    minutos = 5;
+                    break;
+                case R.id.mi10:
+                    minutos = 10;
+                    break;
+                case R.id.mi15:
+                    minutos = 15;
+                    break;
+                case R.id.mi30:
+                    minutos = 30;
+                    break;
+                default:
+                    minutos = 0;
+            }
+            calendar.add(Calendar.MINUTE, -minutos);
+
             long when = calendar.getTimeInMillis();         // notification time
             Intent intent = new Intent(context, AlarmService.class);
             intent.putExtra("evento", evento);
