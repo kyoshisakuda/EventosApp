@@ -77,6 +77,7 @@ public class Asistir extends Fragment {
 
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                eventosLista.clear();
                 for (DataSnapshot data : dataSnapshot.getChildren()){
                     Evento evento = data.getValue(Evento.class);
                     evento.setKey(data.getKey());
